@@ -1,11 +1,14 @@
 const express = require("express");
 const app = express();
-require("dotenv/config");
-const mongoose = require("mongoose");
-const api = process.env.API_URL;
 const morgan = require("morgan");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv/config");
 
-//Middleware
+app.use(cors());
+app.options("*", cors());
+
+//middleware
 app.use(express.json());
 app.use(morgan("tiny"));
 
@@ -15,8 +18,10 @@ const productsRoutes = require("./routes/products");
 const usersRoutes = require("./routes/users");
 const ordersRoutes = require("./routes/orders");
 
-app.use(`${api}/products`, productsRoutes);
+const api = process.env.API_URL;
+
 app.use(`${api}/categories`, categoriesRoutes);
+app.use(`${api}/products`, productsRoutes);
 app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/orders`, ordersRoutes);
 
@@ -28,7 +33,7 @@ mongoose
     dbName: "milkapp-database",
   })
   .then(() => {
-    console.log("Database is connected");
+    console.log("Database Connection is OK");
   })
   .catch((err) => {
     console.log(err);
@@ -36,6 +41,5 @@ mongoose
 
 //Server
 app.listen(3000, () => {
-  console.log("App running on port 3000");
-  //   console.log(api);
+  console.log("server is running http://localhost:3000");
 });

@@ -1,12 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
-  name: String,
-  image: String,
-  countInStock: {
-    type: Number,
-    required: true,
-  },
-});
+ //body here
+})
 
 exports.Order = mongoose.model('Order', orderSchema);
