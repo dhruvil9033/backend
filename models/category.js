@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 
 const categorySchema = mongoose.Schema({
-//body here
+name: {
+    type: String,
+    required: true,
+},
+icon: {
+    type: String,
+},
+color: {
+    type: String,
+}
 })
 
 exports.Category = mongoose.model('Category', categorySchema);
