@@ -14,6 +14,9 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authJwt()); //use braces whenever we call any function app.use
 app.use(errorHandler);
+app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
+
+//this is moved in hadle js
 // app.use((err, req, res, next)=>{
 //   console.log(err)
 //   if(err){
