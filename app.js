@@ -24,7 +24,7 @@ app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 //           // jwt authentication error
 //           return res.status(401).json({ message: "The user is not authorized" });
 //         }
-      
+
 //         if (err.name === "ValidationError") {
 //           //  validation error
 //           return res.status(401).json({ message: err });
