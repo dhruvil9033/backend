@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
 
   if (!user) return res.status(400).send("the user cannot be created!");
 
-  res.send(user);
+  res.status(200).send(user);
 });
 router.put("/:id", async (req, res) => {
   const userExist = await User.findById(req.params.id);
