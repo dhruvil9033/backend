@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    roll: {
+    role: {
         type: String,
         required: true,
     },
@@ -24,13 +24,15 @@ const userSchema = new mongoose.Schema({
 
 });
 
-userSchema.virtual('id').get(function () {
-    return this._id.toHexString();
-});
+// userSchema.virtual('id').get(function () {
+//     return this._id.toHexString();
+// });
+//
+// userSchema.set('toJSON', {
+//     virtuals: true,
+// });
+//
+// exports.User = mongoose.model('User', userSchema);
+// exports.userSchema = userSchema;
 
-userSchema.set('toJSON', {
-    virtuals: true,
-});
-
-exports.User = mongoose.model('User', userSchema);
-exports.userSchema = userSchema;
+module.exports = User = mongoose.model("users", userSchema);
