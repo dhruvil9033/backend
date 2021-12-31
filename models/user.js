@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    name: {
+    fname: {
+        type: String,
+        required: true,
+    },
+    lname: {
         type: String,
         required: true,
     },
@@ -9,38 +13,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    passwordHash: {
+    roll: {
         type: String,
         required: true,
     },
-    phone: {
+    password: {
         type: String,
         required: true,
     },
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    },
-    street: {
-        type: String,
-        default: ''
-    },
-    apartment: {
-        type: String,
-        default: ''
-    },
-    zip :{
-        type: String,
-        default: ''
-    },
-    city: {
-        type: String,
-        default: ''
-    },
-    country: {
-        type: String,
-        default: ''
-    }
 
 });
 

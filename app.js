@@ -36,24 +36,24 @@ app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 // })
 
 //Routes
-const categoriesRoutes = require("./routes/categories");
-const productsRoutes = require("./routes/products");
+// const categoriesRoutes = require("./routes/categories");
+// const productsRoutes = require("./routes/products");
 const usersRoutes = require("./routes/users");
-const ordersRoutes = require("./routes/orders");
+// const ordersRoutes = require("./routes/orders");
 
 const api = process.env.API_URL;
 
-app.use(`${api}/categories`, categoriesRoutes);
-app.use(`${api}/products`, productsRoutes);
+// app.use(`${api}/categories`, categoriesRoutes);
+// app.use(`${api}/products`, productsRoutes);
 app.use(`${api}/users`, usersRoutes);
-app.use(`${api}/orders`, ordersRoutes);
+// app.use(`${api}/orders`, ordersRoutes);
 
 //Database
 mongoose
   .connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: "milkapp-database",
+    dbName: "studentNetwork",
   })
   .then(() => {
     console.log("Database Connection is OK");
@@ -68,7 +68,12 @@ mongoose
 // });
 
 
- var server = app.listen(process.env.PORT || 3000, function () {
-   var port = server.address().port;
-console.log("Heroku server on"+ port)
+ var server = app.listen(process.env.PORT || 5000,  ()=> {
+    var port = server.address().port;
+    console.log("server on "+ port);
+
  })
+
+app.get('/express_backend', (req, res) => { //Line 9
+    res.send({ express: 'YOUR EXPRESS BACKEND IS CONNECTED TO REACT' }); //Line 10
+}); //Line 11
