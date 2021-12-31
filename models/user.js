@@ -28,11 +28,13 @@ const userSchema = new mongoose.Schema({
 //     return this._id.toHexString();
 // });
 //
-// userSchema.set('toJSON', {
-//     virtuals: true,
-// });
+userSchema.set("versionKey", false);
+userSchema.set('toJSON', {
+    virtuals: true,
+
+});
 //
-// exports.User = mongoose.model('User', userSchema);
+// exports.User = mongoose.model('users', userSchema);
 // exports.userSchema = userSchema;
 
 module.exports = User = mongoose.model("users", userSchema);

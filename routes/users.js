@@ -36,16 +36,50 @@ router.post("/register", (req, res) => {
 //           newUser.password = hash;
           newUser
               .save()
-              .then(user => res.json(user))
+              .then(user => res.json({ status: true ,user})
+              )
               .catch(err => console.log(err));
+      res.redirect("http://localhost:3000/login");
+
+
         // });
       // });
     }
   });
 });
 
+router.post("/login", async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  console.log(user);
+  const secret = process.env.secret;
+  if (!user) {
+    console.log(req.body.email);
+    return res.status(400).send("The user not found");
+  }
+  if (
+      user && user.password == req.body.pwd
 
+      // bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
+  ) {
 
+    // res.json({ status: true})
+    res.redirect("http://localhost:3000/home1");
+
+    // const token = jwt.sign(
+    //     {
+    //       userId: user.id,
+    //       // isAdmin: user.isAdmin,
+    //     },
+    //     secret,
+    //     {
+    //       expiresIn: "1d",
+    //     }
+    // );
+    // res.status(200).send({ user: user.email, token: token });
+  } else {
+    res.status(400).send("password is wrong!");
+  }
+});
 
 
 
@@ -76,11 +110,7 @@ router.post("/register", (req, res) => {
 // });
 // router.post("/", async (req, res) => {
 //   let user = new User({
-//     fname: req.body.fname,
-//     lname: req.body.lname,
-//     email: req.body.email,
-//     role: req.body.role,
-//     password: req.body.pwd,
+//
 //     // passwordHash: bcrypt.hashSync(req.body.password.toString(), 10), //? null safety
 //     // phone: req.body.phone,
 //     // isAdmin: req.body.isAdmin,
@@ -126,31 +156,7 @@ router.post("/register", (req, res) => {
 // //
 // //   res.send(user);
 // // });
-// // router.post("/login", async (req, res) => {
-// //   const user = await User.findOne({ email: req.body.email });
-// //   const secret = process.env.secret;
-// //   if (!user) {
-// //     return res.status(400).send("The user not found");
-// //   }
-// //   if (
-// //     user &&
-// //     bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
-// //   ) {
-// //     const token = jwt.sign(
-// //       {
-// //         userId: user.id,
-// //         // isAdmin: user.isAdmin,
-// //       },
-// //       secret,
-// //       {
-// //         expiresIn: "1d",
-// //       }
-// //     );
-// //     res.status(200).send({ user: user.email, token: token });
-// //   } else {
-// //     res.status(400).send("password is wrong!");
-// //   }
-// // });
+
 // router.post("/register", async (req, res) => {
 //   let user = new User({
 //     fname: req.body.fname,
