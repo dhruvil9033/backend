@@ -4,80 +4,89 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../config/keys");
+const sendEmail = require("../utils/sendEmail");
 
 
 
 
-
-router.post("/register", (req, res) => {
+router.post("/register",  async (req, res) => {
   // Form validation
 //   const { errors, isValid } = validateRegisterInput(req.body);
 // // Check validation
 //   if (!isValid) {
 //     return res.status(400).json(errors);
 //   }
-  User.findOne({ email: req.body.email }).then(user => {
+  User.findOne({ email: req.body.email }).then(async user => {
     if (user) {
-      return res.status(400).json({ email: "Email already exists" });
+      console.log("email already exist");
+      // return res.json({)
+      return res.status(400).json({email: "Email already exists"});
     } else {
       const newUser = new User({
 
-
-        fname: req.body.fname,
-        lname: req.body.lname,
+        username: req.body.username,
         email: req.body.email,
-        role: req.body.role,
-        password: req.body.pwd,
+        password: req.body.password,
       });
-// Hash password before saving in database
+      // Hash password before saving in database
 //       bcrypt.genSalt(10, (err, salt) => {
 //         bcrypt.hash(newUser.password, salt, (err, hash) => {
 //           if (err) throw err;
 //           newUser.password = hash;
-          newUser
-              .save()
-              .then(user => res.json({ status: true ,user})
-              )
-              .catch(err => console.log(err));
-      res.redirect("http://localhost:3000/login");
+      console.log("before");
+//       console.log("after");
+      await newUser.save()
+          await sendEmail(req.body.email, "Register Successfully", "Welcome to Student Network...")
+          return res.json({status: true, user})
+          // .then(user => res.json({status: true, user}))
+          // .catch(err => console.log(err));
+      // res.redirect("http://localhost:3000/login");
 
 
-        // });
+      // });
       // });
     }
   });
+   // await sendEmail(req.body.email, "Register Successfully", "Welcome to Student Network...")
 });
 
+
 router.post("/login", async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  console.log(user);
-  const secret = process.env.secret;
-  if (!user) {
-    console.log(req.body.email);
-    return res.status(400).send("The user not found");
+  try {
+    const user = await User.findOne({email: req.body.email});
+    console.log(user);
+    // const secret = process.env.secret;
+    if (!user) {
+      console.log(req.body.email);
+      return res.status(400).send("The user not found");
+    }
+
+    if (
+        user && user.password == req.body.password
+
+        // bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
+    ) {
+
+      // res.json({ status: true})
+      // res.redirect("http://localhost:3000/home1");
+      res.status(200).json(user);
+      // const token = jwt.sign(
+      //     {
+      //       userId: user.id,
+      //       // isAdmin: user.isAdmin,
+      //     },
+      //     secret,
+      //     {
+      //       expiresIn: "1d",
+      //     }
+      // );
+      // res.status(200).send({ user: user.email, token: token });
+    } else {
+      res.status(400).send("password is wrong!");
+    }
   }
-  if (
-      user && user.password == req.body.pwd
-
-      // bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
-  ) {
-
-    // res.json({ status: true})
-    res.redirect("http://localhost:3000/home1");
-
-    // const token = jwt.sign(
-    //     {
-    //       userId: user.id,
-    //       // isAdmin: user.isAdmin,
-    //     },
-    //     secret,
-    //     {
-    //       expiresIn: "1d",
-    //     }
-    // );
-    // res.status(200).send({ user: user.email, token: token });
-  } else {
-    res.status(400).send("password is wrong!");
+  catch (err){
+    res.status(500).json(err)
   }
 });
 
