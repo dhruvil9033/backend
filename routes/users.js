@@ -1,4 +1,4 @@
-const User  = require("../models/user");
+const User = require("../models/user");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
@@ -6,54 +6,52 @@ const jwt = require("jsonwebtoken");
 const keys = require("../config/keys");
 const sendEmail = require("../utils/sendEmail");
 
-
-
-
-router.post("/register",  async (req, res) => {
+router.post("/register", async (req, res) => {
   // Form validation
-//   const { errors, isValid } = validateRegisterInput(req.body);
-// // Check validation
-//   if (!isValid) {
-//     return res.status(400).json(errors);
-//   }
-  User.findOne({ email: req.body.email }).then(async user => {
+  //   const { errors, isValid } = validateRegisterInput(req.body);
+  // // Check validation
+  //   if (!isValid) {
+  //     return res.status(400).json(errors);
+  //   }
+  User.findOne({ email: req.body.email }).then(async (user) => {
     if (user) {
       console.log("email already exist");
       // return res.json({)
-      return res.status(400).json({email: "Email already exists"});
+      return res.status(400).json({ email: "Email already exists" });
     } else {
       const newUser = new User({
-
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
       });
       // Hash password before saving in database
-//       bcrypt.genSalt(10, (err, salt) => {
-//         bcrypt.hash(newUser.password, salt, (err, hash) => {
-//           if (err) throw err;
-//           newUser.password = hash;
+      //       bcrypt.genSalt(10, (err, salt) => {
+      //         bcrypt.hash(newUser.password, salt, (err, hash) => {
+      //           if (err) throw err;
+      //           newUser.password = hash;
       console.log("before");
-//       console.log("after");
-      await newUser.save()
-          await sendEmail(req.body.email, "Register Successfully", "Welcome to Student Network...")
-          return res.json({status: true, user})
-          // .then(user => res.json({status: true, user}))
-          // .catch(err => console.log(err));
+      //       console.log("after");
+      await newUser.save();
+      await sendEmail(
+        req.body.email,
+        "Register Successfully",
+        "Welcome to Student Network..."
+      );
+      return res.json({ status: true, user });
+      // .then(user => res.json({status: true, user}))
+      // .catch(err => console.log(err));
       // res.redirect("http://localhost:3000/login");
-
 
       // });
       // });
     }
   });
-   // await sendEmail(req.body.email, "Register Successfully", "Welcome to Student Network...")
+  // await sendEmail(req.body.email, "Register Successfully", "Welcome to Student Network...")
 });
-
 
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findOne({email: req.body.email});
+    const user = await User.findOne({ email: req.body.email });
     console.log(user);
     // const secret = process.env.secret;
     if (!user) {
@@ -62,11 +60,11 @@ router.post("/login", async (req, res) => {
     }
 
     if (
-        user && user.password == req.body.password
+      user &&
+      user.password == req.body.password
 
-        // bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
+      // bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
     ) {
-
       // res.json({ status: true})
       // res.redirect("http://localhost:3000/home1");
       res.status(200).json(user);
@@ -84,38 +82,65 @@ router.post("/login", async (req, res) => {
     } else {
       res.status(400).send("password is wrong!");
     }
-  }
-  catch (err){
-    res.status(500).json(err)
+  } catch (err) {
+    res.status(500).json(err);
   }
 });
 
+//reset password
+router.post("/forgotpassword", async (req, res) => {
+  User.findOne({ email: req.body.email }).then(async (user) => {
+    if (user) {
+      const link = `http://localhost:3000/reset?email=${req.body.email}`;
+      await sendEmail(
+        req.body.email,
+        "Here Is Your Password Reset Link!!",
+        link
+      );
+      return res.json({ status: true, email: req.body.email });
+    } else {
+      return res.json({ status: false });
+    }
+  });
+});
 
-
+//update Password
+router.put("/resetpassword", async (req, res) => {
+  User.findOne({ email: req.body.email }).then(async (user) => {
+    if (user) {
+      user.password = req.body.password;
+      await user.save();
+      return res.json({ status: true, msg: "Account Updated Succesfully..." });
+    } else {
+      // console.log("email doesn't exist");
+      return res.status(400).json({ msg: "Account not Matched.." });
+    }
+  });
+});
 
 //update user
-router.put("/:id", async (req, res) => {
-  if (req.body.userId === req.params.id || req.body.isAdmin) {
-    if (req.body.password) {
-      try {
-        const salt = await bcrypt.genSalt(10);
-        req.body.password = await bcrypt.hash(req.body.password, salt);
-      } catch (err) {
-        return res.status(500).json(err);
-      }
-    }
-    try {
-      const user = await User.findByIdAndUpdate(req.params.id, {
-        $set: req.body,
-      });
-      res.status(200).json("Account has been updated");
-    } catch (err) {
-      return res.status(500).json(err);
-    }
-  } else {
-    return res.status(403).json("You can update only your account!");
-  }
-});
+// router.put("/:id", async (req, res) => {
+//   if (req.body.userId === req.params.id || req.body.isAdmin) {
+//     if (req.body.password) {
+//       try {
+//         const salt = await bcrypt.genSalt(10);
+//         req.body.password = await bcrypt.hash(req.body.password, salt);
+//       } catch (err) {
+//         return res.status(500).json(err);
+//       }
+//     }
+//     try {
+//       const user = await User.findByIdAndUpdate(req.params.id, {
+//         $set: req.body,
+//       });
+//       res.status(200).json("Account has been updated");
+//     } catch (err) {
+//       return res.status(500).json(err);
+//     }
+//   } else {
+//     return res.status(403).json("You can update only your account!");
+//   }
+// });
 
 //delete user
 router.delete("/:id", async (req, res) => {
@@ -137,8 +162,8 @@ router.get("/", async (req, res) => {
   const username = req.query.username;
   try {
     const user = userId
-        ? await User.findById(userId)
-        : await User.findOne({ username: username });
+      ? await User.findById(userId)
+      : await User.findOne({ username: username });
     const { password, updatedAt, ...other } = user._doc;
     res.status(200).json(other);
   } catch (err) {
@@ -151,16 +176,16 @@ router.get("/friends/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const friends = await Promise.all(
-        user.followings.map((friendId) => {
-          return User.findById(friendId);
-        })
+      user.followings.map((friendId) => {
+        return User.findById(friendId);
+      })
     );
     let friendList = [];
     friends.map((friend) => {
       const { _id, username, profilePicture } = friend;
       friendList.push({ _id, username, profilePicture });
     });
-    res.status(200).json(friendList)
+    res.status(200).json(friendList);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -209,12 +234,6 @@ router.put("/:id/unfollow", async (req, res) => {
     res.status(403).json("you cant unfollow yourself");
   }
 });
-
-
-
-
-
-
 
 // router.get(`/`, async (req, res) => {
 //   const userList = await User.find().select("-passwordHash");
