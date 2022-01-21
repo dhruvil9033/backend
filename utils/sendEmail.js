@@ -24,7 +24,7 @@ const sendEmail = async (email, subject, text) => {
       from: "dhruvilgajera30@gmai.com",
       to: email,
       subject: subject,
-      text: text,
+      html: text,
     });
 
     console.log("email sent sucessfully");

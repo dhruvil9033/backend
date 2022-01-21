@@ -35,7 +35,7 @@ router.post("/register", async (req, res) => {
       await sendEmail(
         req.body.email,
         "Register Successfully",
-        "Welcome to Student Network..."
+        `<h1 style='color:blue'>Student Network</h1><br /><h2>Welcome to the Student Network, You have Successfully Registered.. </h2>`
       );
       return res.json({ status: true, user });
       // .then(user => res.json({status: true, user}))
@@ -91,12 +91,8 @@ router.post("/login", async (req, res) => {
 router.post("/forgotpassword", async (req, res) => {
   User.findOne({ email: req.body.email }).then(async (user) => {
     if (user) {
-      const link = `http://localhost:3000/reset?email=${req.body.email}`;
-      await sendEmail(
-        req.body.email,
-        "Here Is Your Password Reset Link!!",
-        link
-      );
+      const link = `<p style="color:red">Here Is Your Password Reset Link!!</p> http://localhost:3000/reset?email=${req.body.email}`;
+      await sendEmail(req.body.email, "Password Reset Link", link);
       return res.json({ status: true, email: req.body.email });
     } else {
       return res.json({ status: false });
