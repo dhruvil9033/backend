@@ -5,21 +5,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // lname: {
-  //     type: String,
-  //     required: true,
-  // },
   email: {
     type: String,
     required: true,
+    trim: true,
   },
-  // role: {
-  //     type: String,
-  //     required: true,
-  // },
   password: {
     type: String,
     required: true,
+    trim: true,
+  },
+  avatar: {
+    type: String,
   },
 });
 
@@ -31,8 +28,5 @@ userSchema.set("versionKey", false);
 userSchema.set("toJSON", {
   virtuals: true,
 });
-//
-// exports.User = mongoose.model('users', userSchema);
-// exports.userSchema = userSchema;
 
 module.exports = User = mongoose.model("users", userSchema);

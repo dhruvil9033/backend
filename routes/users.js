@@ -1,3 +1,4 @@
+const gravatar = require("gravatar");
 const User = require("../models/user");
 const express = require("express");
 const router = express.Router();
@@ -14,39 +15,41 @@ router.post("/register", async (req, res) => {
   //     return res.status(400).json(errors);
   //   }
   User.findOne({ email: req.body.email }).then(async (user) => {
+    let EMAIL_EXIST = false;
+    let STATUS = false;
     if (user) {
       console.log("email already exist");
-      // return res.json({)
-      return res.status(400).json({ email: "Email already exists" });
+      EMAIL_EXIST = true;
     } else {
+      const avatar = gravatar.url(req.body.email, {
+        s: "200",
+        r: "pg",
+        d: "mm",
+      });
+
       const newUser = new User({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
+        avatar: avatar,
       });
-      // Hash password before saving in database
-      //       bcrypt.genSalt(10, (err, salt) => {
-      //         bcrypt.hash(newUser.password, salt, (err, hash) => {
-      //           if (err) throw err;
-      //           newUser.password = hash;
-      console.log("before");
-      //       console.log("after");
+
+      //Encrypt password
+
+      const salt = await bcrypt.genSalt(10);
+
+      newUser.password = await bcrypt.hash(newUser.password, salt);
+
       await newUser.save();
       await sendEmail(
         req.body.email,
         "Register Successfully",
         `<h1 style='color:blue'>Student Network</h1><br /><h2>Welcome to the Student Network, You have Successfully Registered.. </h2>`
       );
-      return res.json({ status: true, user });
-      // .then(user => res.json({status: true, user}))
-      // .catch(err => console.log(err));
-      // res.redirect("http://localhost:3000/login");
-
-      // });
-      // });
+      STATUS = true;
     }
+    return res.json({ EMAIL_EXIST: EMAIL_EXIST, STATUS: STATUS, user });
   });
-  // await sendEmail(req.body.email, "Register Successfully", "Welcome to Student Network...")
 });
 
 router.post("/login", async (req, res) => {
@@ -59,12 +62,9 @@ router.post("/login", async (req, res) => {
       return res.status(400).send("The user not found");
     }
 
-    if (
-      user &&
-      user.password == req.body.password
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
 
-      // bcrypt.compareSync(req.body.password.toString(), user.passwordHash)
-    ) {
+    if (user && isMatch) {
       // res.json({ status: true})
       // res.redirect("http://localhost:3000/home1");
       res.status(200).json(user);
@@ -80,6 +80,7 @@ router.post("/login", async (req, res) => {
       // );
       // res.status(200).send({ user: user.email, token: token });
     } else {
+      console.log("password is wrong!");
       res.status(400).send("password is wrong!");
     }
   } catch (err) {
@@ -104,7 +105,10 @@ router.post("/forgotpassword", async (req, res) => {
 router.put("/resetpassword", async (req, res) => {
   User.findOne({ email: req.body.email }).then(async (user) => {
     if (user) {
-      user.password = req.body.password;
+      //Encrypt password
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(req.body.password, salt);
+
       await user.save();
       return res.json({ status: true, msg: "Account Updated Succesfully..." });
     } else {
