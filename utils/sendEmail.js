@@ -11,10 +11,10 @@ const sendEmail = async (email, subject, text) => {
       auth: {
         // user: "b57a63ae263fb0",
         // pass: "4445ab44be1fe7",
-        user: "20mapog003@ddu.ac.in",
-        pass: "raj_111099",
-        // user: "dhruvilgajera30@gmail.com",
-        // pass: "9033232788docomo"
+        // user: "20mapog003@ddu.ac.in",
+        // pass: "raj_111099",
+        user: "dhruvilgajera30@gmail.com",
+        pass: "9033232788docomo"
       },
       // tls:{
       //     rejectUnauthorized : false,
